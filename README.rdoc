@@ -1,0 +1,16 @@
+= jQuery Cell Editor Plugin
+
+== Overview
+
+This is a jQuery plugin for selecting and editing text in table cells. There are many similar plugins available
+with far more features than this one, but that was the point of creating this plugin. I needed something
+simpler to work with.
+
+This is still a work in progress. I would NOT use this plugin just yet.
+
+== Usage
+
+* Include JavaScript file in your html page.
+* Call cellEditor for one or more table elements where the cells should be editable.
+    $('table#data').cellEditor();
+
