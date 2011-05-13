@@ -1,5 +1,6 @@
 (function($) {
     var KEY_LEFT = 37, KEY_UP = 38, KEY_RIGHT = 39, KEY_DOWN = 40, KEY_ENTER = 13, KEY_ESCAPE = 27;
+    var DATA_NAME = 'original.cell-editor';
     var defaultOptions = {
         editKey: [13],
         selectClassName: 'select',
@@ -31,7 +32,7 @@
     $.fn.cellEditor = function(customOptions) {
         return this.each(function() {
             var $this = $(this);
-            var options = $.extend(defaultOptions, customOptions);
+            var options = $.extend({}, defaultOptions, customOptions);
             var currentTable = this;
             var currentRow = -1, currentCol = -1;
             var currentEditing = false;
@@ -117,7 +118,7 @@
                 }
                 
                 var cellWidth = $cell.innerWidth();
-                $input.data('original.cell-editor', $cell.text());
+                $input.data(DATA_NAME, $cell.text());
                 $cell.empty().append($input);
                 $input.outerWidth(cellWidth);
                 currentRow = rowIndex;
@@ -134,7 +135,8 @@
                 var $cell = getCell(currentRow, currentCol);
                 $cell.removeClass(options.editClassName);
                 var $input = $cell.find('input');
-                var value = useValue===false ? $input.data('original.cell-editor') : $input.val();
+                var value = useValue===false ? $input.data(DATA_NAME) : $input.val();
+                $input.removeData(DATA_NAME);
                 $cell.text(value);
             }
 
@@ -201,8 +203,15 @@
             });
             $this.mousedown(function(ev) {
                 var cellIndex = getIndex(ev.target);
-                if (cellIndex)
+                if (cellIndex && (!currentEditing || (cellIndex.row!=currentRow || cellIndex.col!=currentCol))) {
                     goToCell(cellIndex.row, cellIndex.col);
+                }
+            });
+            $this.dblclick(function(ev) {
+                var cellIndex = getIndex(ev.target);
+                if (cellIndex && (!currentEditing || (cellIndex.row!=currentRow || cellIndex.col!=currentCol)))
+                    editCell(cellIndex.row, cellIndex.col);
+                    ev.preventDefault();
             });
         });
     }
