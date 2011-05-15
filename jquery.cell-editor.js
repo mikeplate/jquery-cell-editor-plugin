@@ -9,6 +9,8 @@
     
     $('<style>.cellEditor:focus { outline: none; } .cellEditor td.select { background-color: #EED; }</style>').appendTo('head');
 
+    //// Global helper functions
+
     function buildElementTree(startElement, topmostElement) {
         var elTree = [startElement];
         var el = startElement;
@@ -29,8 +31,12 @@
         return null;
     }
 
+    //// Plugin
+
     $.fn.cellEditor = function(customOptions) {
         return this.each(function() {
+            //// Instance members
+
             var $this = $(this);
             var options = $.extend({}, defaultOptions, customOptions);
             var currentTable = this;
@@ -40,6 +46,8 @@
 
             $this.addClass('cellEditor');
             $this.attr('tabindex', 0);
+
+            //// Instance functions
 
             function goToCell(rowIndex, colIndex) {
                 if (currentRow>=0 && currentCol>=0) {
@@ -117,7 +125,7 @@
                     $input.val(value);
                 }
                 
-                var cellWidth = $cell.innerWidth();
+                var cellWidth = $cell.width();
                 $input.data(DATA_NAME, $cell.text());
                 $cell.empty().append($input);
                 $input.outerWidth(cellWidth);
@@ -140,6 +148,8 @@
                 $cell.text(value);
             }
 
+            //// Event responders
+
             $this.focus(function(ev) {
                 if (ev.target==currentTable) {
                     if (currentRow==-1 || currentCol==-1) {
@@ -149,6 +159,7 @@
                     goToCell(currentRow, currentCol);
                 }
             });
+
             $this.blur(function(ev) {
                 if (holdBlurEvent) {
                     holdBlurEvent = false;
@@ -161,6 +172,7 @@
                         unselectCurrentCell();
                 }
             });
+            
             $this.keydown(function(ev) {
                 if (ev.keyCode == KEY_LEFT) {
                     if (!currentEditing && currentCol > 0) 
@@ -195,18 +207,21 @@
                     }
                 }
             });
+            
             $this.keypress(function(ev) {
                 if (!currentEditing && currentRow>=0 && currentCol>=0) {
                     if (ev.which!==0 && ev.charCode!==0)
                         editCell(currentRow, currentCol, String.fromCharCode(ev.charCode));
                 }
             });
+            
             $this.mousedown(function(ev) {
                 var cellIndex = getIndex(ev.target);
                 if (cellIndex && (!currentEditing || (cellIndex.row!=currentRow || cellIndex.col!=currentCol))) {
                     goToCell(cellIndex.row, cellIndex.col);
                 }
             });
+            
             $this.dblclick(function(ev) {
                 var cellIndex = getIndex(ev.target);
                 if (cellIndex && (!currentEditing || (cellIndex.row!=currentRow || cellIndex.col!=currentCol)))
